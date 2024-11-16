@@ -1,4 +1,5 @@
-"[server]" 
-"headless = true" 
-"fileWatcherType = 'none'" 
-"main_file = 'explor.py'" 
+[server]
+headless = true
+fileWatcherType = "none"
+main_file = "explor.py"
+ 
