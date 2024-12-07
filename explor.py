@@ -12,7 +12,7 @@ from fpdf import FPDF
 import io
 import os
 
-#import sqlite3
+import sqlite3
 #from datetime import datetime
 # Initialize SQLite database
 def init_db():
