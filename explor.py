@@ -8,34 +8,9 @@ from skfuzzy import control as ctrl
 import numpy as np
 import streamlit as st
 import matplotlib.pyplot as plt
-from fpdf import FPDF
+#from fpdf import FPDF
 import io
 import os
-
-import sqlite3
-#from datetime import datetime
-# Initialize SQLite database
-def init_db():
-    conn = sqlite3.connect("feedback.db")
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS feedback (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            email TEXT,
-            ui_rating INTEGER,
-            recommendation_rating INTEGER,
-            speed_rating INTEGER,
-            overall_rating INTEGER,
-            comments TEXT,
-            timestamp TEXT
-        )
-        """
-    )
-    conn.commit()
-    conn.close()
-
 # API Key and User-Agent
 USER_AGENT = "FuzzyCityExplorer/1.0 (aluyey@gmail.com)"
 API_KEY = '9d262738e747d56be9e2bf0adb156a0f'  # OpenWeatherMap API Key
@@ -331,13 +306,12 @@ if st.markdown('<button class="custom-button">Search Recommendation</button>', u
 
     if weather_condition and lat and lon:
         # Process and display the results as needed
-        #st.write(f"Weather Condition: {weather_condition}, Temperature: {temperature}°C")
 
         # Display Weather Information
         st.markdown(
             f"""
             <div class="bounded-box">
-                <p><strong>Weather Condtion:</strong> {weather_condition.capitalize()}, 
+                <p><strong>Weather Condition:</strong> {weather_condition.capitalize()}<br> 
                 <strong>Temperature:</strong> {temperature}°C</p>
             </div>
             """,
@@ -354,26 +328,33 @@ if st.markdown('<button class="custom-button">Search Recommendation</button>', u
         st.markdown(
             f"""
             <div class="bounded-box">
-                <h3>Recommended Activitis:</h3>
-                {''.join(f"<div class='interactive-bullet'>• {rec}</div>" for rec in recommendations)}
+                <h3><strong>Recommended Activities:</strong></h3>
+                {''.join(f"<div class='interactive-bullet'><strong>• {rec}</strong></div>" for rec in recommendations)}
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        # Nearby Points of Interest base on the recommendations
-        st.markdown("<div class='poi-title'>Nearby Points of Interest  based on the recommendations:</div>", unsafe_allow_html=True)
+        # Nearby Points of Interest based on the recommendations
+        st.markdown(
+            "<div class='poi-title'><strong>Nearby Points of Interest Based on the Recommendations:</strong></div>", 
+            unsafe_allow_html=True
+        )
         places = fetch_nearby_places_nominatim(lat, lon, poi_category)
         if places:
             distances = calculate_distances((lat, lon), places)
             for place in distances:
-                st.markdown(f"<div class='poi-item'>• {place['name']} ({place['distance']} km)</div>", unsafe_allow_html=True)
+                st.markdown(
+                    f"<div class='poi-item'><strong>• {place['name']}</strong> (<strong>{place['distance']} km</strong>)</div>", 
+                    unsafe_allow_html=True
+                )
             st.markdown("<br>", unsafe_allow_html=True)
             show_osm_map(lat, lon, city, places)
         else:
-            st.error("Sorry There is No nearby places found for the selected activity, Please try another")
+            st.error("Sorry, no nearby places found for the selected activity. Please try another.")
     else:
         st.error("Unable to fetch weather data. Please enter a valid city.")
+
 
 # Function to save feedback to a text file
 def save_feedback_to_txt(rating, comments, file_path="feedback.txt"):
